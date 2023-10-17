@@ -59,6 +59,9 @@ compile_commands.json
 # Qml cache
 *_qmlcache.qrc
 
+# Qt Design Studio
+*.qmlproject.qtds
+
 ## Visual Studio Code
 .vscode/
 build/

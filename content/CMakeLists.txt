@@ -12,6 +12,7 @@ qt6_add_qml_module(content
         App.qml
         BatterySelector.qml
         BatterySelectorForm.ui.qml
+        MainScreen.ui.qml
         Screen01.ui.qml
 
 )

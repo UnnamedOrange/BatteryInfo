@@ -5,13 +5,18 @@ import QtQuick 6.5
 import BatteryInfo
 
 Window {
-    width: mainScreen.width
-    height: mainScreen.height
+    id: window
+    width: 480
+    height: 640
 
     visible: true
     title: "BatteryInfo"
 
-    Screen01 {
+    MainScreen {
         id: mainScreen
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
     }
 }

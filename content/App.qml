@@ -10,6 +10,7 @@ Window {
     height: 640
 
     visible: true
+    flags: Qt.Window
     title: "BatteryInfo"
 
     MainScreen {

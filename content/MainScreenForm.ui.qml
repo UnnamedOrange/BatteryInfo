@@ -7,11 +7,8 @@ Check out https://doc.qt.io/qtcreator/creator-quick-ui-forms.html for details on
 */
 import QtQuick 6.5
 import QtQuick.Controls 6.5
-import BatteryInfo
 
 Rectangle {
-    id: item1
-
     BatterySelector {
         id: batterySelector
 

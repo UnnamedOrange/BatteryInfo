@@ -6,12 +6,16 @@
 
 #include "app_environment.h"
 #include "import_qml_plugins.h"
+#include "ui/NativeMainScreen.h"
 
 int main(int argc, char* argv[]) {
     set_qt_environment();
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    qmlRegisterType<NativeMainScreen>("NativeMainScreen", 1, 0, "NativeMainScreen");
+
     const QUrl url(u"qrc:/qt/qml/Main/main.qml"_qs);
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated, &app,

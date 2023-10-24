@@ -14,14 +14,18 @@ Item {
 
     Button {
         id: button
-        text: qsTr("Button")
+
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
+
+        text: qsTr("Button")
+        font.pointSize: 12
     }
 
     ComboBox {
         id: comboBox
+
         anchors.left: parent.left
         anchors.right: button.left
         anchors.top: parent.top

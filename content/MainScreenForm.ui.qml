@@ -9,6 +9,9 @@ import QtQuick 6.5
 import QtQuick.Controls 6.5
 
 Rectangle {
+    property alias batterySelector: batterySelector
+    property alias grid: grid
+
     BatterySelector {
         id: batterySelector
 

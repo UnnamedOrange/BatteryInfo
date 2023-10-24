@@ -11,7 +11,10 @@ import BatteryInfo
 
 Rectangle {
     id: item1
+
     BatterySelector {
+        id: batterySelector
+
         anchors.left: parent.left
         anchors.leftMargin: 8
         anchors.right: parent.right
@@ -20,5 +23,20 @@ Rectangle {
         anchors.topMargin: 4
 
         button.text: qsTr("Refresh")
+    }
+
+    Grid {
+        id: grid
+
+        anchors.left: parent.left
+        anchors.leftMargin: 8
+        anchors.right: parent.right
+        anchors.rightMargin: 8
+        anchors.top: batterySelector.bottom
+        anchors.topMargin: 8
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 8
+
+        columns: 2
     }
 }

@@ -59,6 +59,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
   Qt${QT_VERSION_MAJOR}::Qml
   Qt${QT_VERSION_MAJOR}::Quick
 )
+if(WIN32)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+    setupapi
+  )
+endif()
 
 if (BUILD_QDS_COMPONENTS)
   include(${CMAKE_CURRENT_SOURCE_DIR}/qmlcomponents)

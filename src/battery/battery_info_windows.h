@@ -14,12 +14,92 @@
 #include "types.h"
 
 namespace orange::battery {
+    template <typename T, intptr_t IH>
+    class AbstractUniqueHandle {
+        using Self = AbstractUniqueHandle<T, IH>;
+
+    public:
+        using Handle = T;
+        static constexpr auto INVALID_HANDLE = IH;
+
+    protected:
+        Handle handle;
+
+    public:
+        AbstractUniqueHandle() noexcept : handle(Handle(INVALID_HANDLE)) {}
+        AbstractUniqueHandle(const Self&) = delete;
+        AbstractUniqueHandle(Self&& other) noexcept : AbstractUniqueHandle() {
+            *this = std::move(other);
+        }
+        Self& operator=(Self&& other) noexcept {
+            using std::swap;
+            swap(this->handle, other.handle);
+            return *this;
+        }
+
+        virtual ~AbstractUniqueHandle() = default;
+
+        AbstractUniqueHandle(Handle handle) : handle(handle) {}
+
+    public:
+        bool empty() const noexcept {
+            return handle == Handle(INVALID_HANDLE);
+        }
+        T get() const noexcept {
+            return handle;
+        }
+        explicit operator bool() const noexcept {
+            return !empty();
+        }
+        operator T() const noexcept {
+            return handle;
+        }
+    };
+
+    class UniqueHandleDevInfo final : public AbstractUniqueHandle<HDEVINFO, -1> {
+        using Self = UniqueHandleDevInfo;
+        using Super = AbstractUniqueHandle<HDEVINFO, -1>;
+
+    public:
+        using Super::AbstractUniqueHandle;
+        ~UniqueHandleDevInfo() {
+            reset();
+        }
+
+    public:
+        void reset() noexcept {
+            if (!empty()) {
+                SetupDiDestroyDeviceInfoList(Super::handle);
+                handle = Handle(INVALID_HANDLE);
+            }
+        }
+    };
+
+    class UniqueHandleX final : public AbstractUniqueHandle<HANDLE, -1> {
+        using Self = UniqueHandleDevInfo;
+        using Super = AbstractUniqueHandle<HANDLE, -1>;
+
+    public:
+        using Super::AbstractUniqueHandle;
+        ~UniqueHandleX() {
+            reset();
+        }
+
+    public:
+        void reset() noexcept {
+            if (!empty()) {
+                CloseHandle(Super::handle);
+                handle = Handle(INVALID_HANDLE);
+            }
+        }
+    };
+
     inline void enumerate_batteries() noexcept {
-        HDEVINFO hdevinfo = SetupDiGetClassDevsW(&GUID_DEVCLASS_BATTERY, //
-                                                 nullptr,                // Enumerator
-                                                 nullptr,                // hwndParent
-                                                 DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-        if (hdevinfo == INVALID_HANDLE_VALUE) {
+        auto hdevinfo = UniqueHandleDevInfo(SetupDiGetClassDevsW(&GUID_DEVCLASS_BATTERY, //
+                                                                 nullptr,                // Enumerator
+                                                                 nullptr,                // hwndParent
+                                                                 DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
+        if (!hdevinfo) {
             return;
         }
 
@@ -50,13 +130,13 @@ namespace orange::battery {
 
             // Open device.
             [[maybe_unused]] const auto _device_path = std::wstring_view{didd.DevicePath};
-            HANDLE hdev = CreateFileW(didd.DevicePath,                      //
-                                      GENERIC_READ | GENERIC_WRITE,         //
-                                      FILE_SHARE_READ | FILE_SHARE_WRITE,   //
-                                      nullptr,                              // dwCreationDisposition
-                                      OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, //
-                                      nullptr);                             // hTemplateFile
-            if (hdev == INVALID_HANDLE_VALUE) {
+            auto hdev = UniqueHandleX(CreateFileW(didd.DevicePath,                      //
+                                                  GENERIC_READ | GENERIC_WRITE,         //
+                                                  FILE_SHARE_READ | FILE_SHARE_WRITE,   //
+                                                  nullptr,                              // dwCreationDisposition
+                                                  OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, //
+                                                  nullptr));                            // hTemplateFile
+            if (!hdev) {
                 continue;
             }
 
@@ -72,10 +152,10 @@ namespace orange::battery {
                                  sizeof(battery_tag),     //
                                  &bytes_returned,         //
                                  nullptr)) {              // lpOverlapped
-                goto FAIL_DEVICE_IO_CONTROL;
+                continue;
             }
             if (!battery_tag) {
-                goto FAIL_DEVICE_IO_CONTROL;
+                continue;
             }
 
             auto bqi = BATTERY_QUERY_INFORMATION{
@@ -90,7 +170,7 @@ namespace orange::battery {
                                  sizeof(bi),                      //
                                  &bytes_returned,                 //
                                  nullptr)) {                      // lpOverlapped
-                goto FAIL_DEVICE_IO_CONTROL;
+                continue;
             }
 
             auto bws = BATTERY_WAIT_STATUS{
@@ -106,13 +186,8 @@ namespace orange::battery {
                                  sizeof(bs),                 //
                                  &bytes_returned,            //
                                  nullptr)) {                 // lpOverlapped
-                goto FAIL_DEVICE_IO_CONTROL;
+                continue;
             }
-
-        FAIL_DEVICE_IO_CONTROL:
-            CloseHandle(hdev);
         }
-
-        SetupDiDestroyDeviceInfoList(hdevinfo);
     }
 } // namespace orange::battery

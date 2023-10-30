@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <expected>
 #include <optional>
 #include <ranges>
 #include <vector>
@@ -12,25 +13,30 @@ namespace orange::battery {
         using Self = BatteryInfoManager;
 
     public:
-        static std::optional<uint32_t> query_battery_count() noexcept;
-        static std::optional<BatteryInfo> query_battery_info(uint32_t idx) noexcept;
-        inline static std::optional<std::vector<BatteryInfo>> query_battery_info_all() noexcept {
-            using Ret = decltype(query_battery_info_all());
-            struct Unit {};
+        enum class ErrorType {
+            UNKNOWN,
+            BATTERY_NOT_EXIST,
+            FAIL_TO_QUERY_INFORMATION,
+        };
 
-            return Self::query_battery_count().and_then([](auto bc) -> Ret {
-                std::vector<BatteryInfo> ret;
-                for (auto i : std::views::iota(0u, bc)) {
-                    const auto result = query_battery_info(i).transform([&](auto&& it) {
-                        ret.push_back(std::move(it));
-                        return Unit{};
-                    });
-                    if (!result.has_value()) {
-                        return std::nullopt;
-                    }
+    public:
+        static auto query_battery_count() noexcept -> std::optional<uint32_t>;
+        static auto query_battery_info(uint32_t idx) noexcept -> std::expected<BatteryInfo, ErrorType>;
+        inline static auto query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType> {
+            std::vector<BatteryInfo> ret;
+
+            for (uint32_t idx = 0; true; idx++) {
+                const auto bi = query_battery_info(idx);
+                if (!bi.has_value() && bi.error() == ErrorType::FAIL_TO_QUERY_INFORMATION) {
+                    return std::unexpected{ErrorType::FAIL_TO_QUERY_INFORMATION};
+                } else if (!bi.has_value() && bi.error() == ErrorType::BATTERY_NOT_EXIST) {
+                    break;
+                } else if (!bi.has_value()) {
+                    return std::unexpected{ErrorType::UNKNOWN};
                 }
-                return std::optional{ret};
-            });
+                ret.push_back(std::move(*bi));
+            }
+            return ret;
         }
     };
 } // namespace orange::battery

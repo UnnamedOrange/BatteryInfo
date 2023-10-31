@@ -214,5 +214,8 @@ auto Self::query_battery_info(uint32_t index) noexcept -> std::expected<BatteryI
     } while (false);
     return std::unexpected{Self::ErrorType::FAIL_TO_QUERY_INFORMATION};
 }
+auto Self::query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType> {
+    return Self::query_battery_info_all_seperate_impl();
+}
 
 #endif

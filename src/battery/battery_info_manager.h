@@ -22,7 +22,12 @@ namespace orange::battery {
     public:
         static auto query_battery_count() noexcept -> std::optional<uint32_t>;
         static auto query_battery_info(uint32_t idx) noexcept -> std::expected<BatteryInfo, ErrorType>;
-        inline static auto query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType> {
+        static auto query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType>;
+
+    private:
+        inline static auto query_battery_info_all_seperate_impl() noexcept
+            -> std::expected<std::vector<BatteryInfo>, ErrorType> {
+
             std::vector<BatteryInfo> ret;
 
             for (uint32_t idx = 0; true; idx++) {

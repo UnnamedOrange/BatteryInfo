@@ -43,5 +43,22 @@ namespace orange::battery {
             }
             return ret;
         }
+        inline static auto query_battery_count_aggregate_impl() noexcept -> std::optional<uint32_t> {
+            const auto ret = query_battery_info_all().transform([](const auto& it) { return it.size(); });
+            if (ret.has_value()) {
+                return *ret;
+            } else {
+                return std::nullopt;
+            }
+        }
+        inline static auto query_battery_info_aggregate_impl(uint32_t idx) noexcept {
+            return query_battery_info_all().and_then([&](const auto& it) -> std::expected<BatteryInfo, ErrorType> {
+                if (idx < it.size()) {
+                    return it[idx];
+                } else {
+                    return std::unexpected{ErrorType::BATTERY_NOT_EXIST};
+                }
+            });
+        }
     };
 } // namespace orange::battery

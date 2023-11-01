@@ -91,6 +91,38 @@ public:
     }
 };
 
+auto Self::query_battery_count() noexcept -> std::optional<uint32_t> {
+    auto hdevinfo = UniqueHandleDevInfo(SetupDiGetClassDevsW(&GUID_DEVCLASS_BATTERY, //
+                                                             nullptr,                // Enumerator
+                                                             nullptr,                // hwndParent
+                                                             DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
+    if (!hdevinfo) {
+        return std::nullopt;
+    }
+
+    for (uint32_t idx = 0; true; idx++) {
+        BOOL result;
+
+        // Get interface data.
+        auto did = SP_DEVICE_INTERFACE_DATA{
+            .cbSize = sizeof(SP_DEVICE_INTERFACE_DATA),
+        };
+        result = SetupDiEnumDeviceInterfaces(hdevinfo,               //
+                                             nullptr,                // DeviceInfoData
+                                             &GUID_DEVCLASS_BATTERY, //
+                                             idx,                    //
+                                             &did);
+        if (!result) {
+            const auto error = GetLastError();
+            if (error == ERROR_NO_MORE_ITEMS) {
+                return idx;
+            } else {
+                break;
+            }
+        }
+    }
+    return std::nullopt;
+}
 auto Self::query_battery_info(uint32_t index) noexcept -> std::expected<BatteryInfo, ErrorType> {
     do {
         auto hdevinfo = UniqueHandleDevInfo(SetupDiGetClassDevsW(&GUID_DEVCLASS_BATTERY, //

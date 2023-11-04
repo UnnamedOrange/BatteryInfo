@@ -1,12 +1,13 @@
 import QtQuick 6.5
-import NativeMainScreen 1.0
+import BatteryInfoManager 1.0
 
 MainScreenForm {
-    NativeMainScreen{
-        id: nativeMainScreen
+    BatteryInfoManager {
+        id: batteryInfoManager
     }
 
     batterySelector.button.onClicked: {
-        nativeMainScreen.on_fresh_button_clicked()
+        let t = batteryInfoManager.query_battery_count()
+        console.log(t)
     }
 }

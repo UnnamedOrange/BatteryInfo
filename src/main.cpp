@@ -6,7 +6,9 @@
 
 #include "app_environment.h"
 #include "import_qml_plugins.h"
-#include "ui/NativeMainScreen.h"
+#include "qml/battery_info_manager_qml.h"
+
+using namespace orange::battery;
 
 int main(int argc, char* argv[]) {
     set_qt_environment();
@@ -14,7 +16,7 @@ int main(int argc, char* argv[]) {
 
     QQmlApplicationEngine engine;
 
-    qmlRegisterType<NativeMainScreen>("NativeMainScreen", 1, 0, "NativeMainScreen");
+    qmlRegisterType<BatteryInfoManagerQml>("BatteryInfoManager", 1, 0, "BatteryInfoManager");
 
     const QUrl url(u"qrc:/qt/qml/Main/main.qml"_qs);
     QObject::connect(

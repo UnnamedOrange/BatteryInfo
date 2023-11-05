@@ -7,7 +7,7 @@ MainScreenForm {
     }
 
     batterySelector.button.onClicked: {
-        let t = batteryInfoManager.query_battery_count()
-        console.log(t)
+        let t = batteryInfoManager.queryBatteryInfo(0)
+        console.log(JSON.stringify(t))
     }
 }

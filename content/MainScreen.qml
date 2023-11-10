@@ -11,6 +11,20 @@ MainScreenForm {
     }
     batterySelector.comboBox.model: comboBoxModel
 
+    Timer {
+        id: updateTimer
+
+        interval: 10000
+        repeat: true
+        onTriggered: {
+            updateBatteryInfoCurrent()
+        }
+    }
+
+    function updateBatteryInfoCurrent() {
+        updateBatteryInfo(batterySelector.comboBox.currentIndex)
+    }
+
     function updateBatteryInfo(idx) {
         let t = batteryInfoManager.queryBatteryInfo(idx)
         textEditCapacity.text = t["capacity"]
@@ -34,11 +48,13 @@ MainScreenForm {
                                  })
         }
         batterySelector.comboBox.currentIndex = 0
+
+        updateTimer.running = true
     }
     batterySelector.comboBox.onCurrentIndexChanged: {
-        updateBatteryInfo(batterySelector.comboBox.currentIndex)
+        updateBatteryInfoCurrent()
     }
     batterySelector.button.onClicked: {
-        updateBatteryInfo(batterySelector.comboBox.currentIndex)
+        updateBatteryInfoCurrent()
     }
 }

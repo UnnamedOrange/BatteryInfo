@@ -11,6 +11,17 @@ import QtQuick.Layouts 6.5
 
 Rectangle {
     property alias batterySelector: batterySelector
+    property alias textEditCapacity: textEditCapacity
+    property alias textEditPowerState: textEditPowerState
+    property alias textEditRate: textEditRate
+    property alias textEditVoltage: textEditVoltage
+    property alias textEditDesignedCapacity: textEditDesignedCapacity
+    property alias textEditFullChargedCapacity: textEditFullChargedCapacity
+    property alias textEditDefaultAlertWarning: textEditDefaultAlertWarning
+    property alias textEditDefaultAlertLow: textEditDefaultAlertLow
+    property alias textEditChemistry: textEditChemistry
+    property alias textEditCriticalBias: textEditCriticalBias
+    property alias textEditCycleCount: textEditCycleCount
 
     BatterySelector {
         id: batterySelector

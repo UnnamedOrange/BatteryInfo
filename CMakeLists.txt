@@ -10,6 +10,8 @@ project(libBatteryInfo
 
 option(BUILD_STATIC_LIB "Build static library" ON)
 
+option(BUILD_GUI_DEMO "Build GUI demo" OFF)
+
 ################################################################################
 ## Dependencies
 include(FetchContent)
@@ -62,4 +64,6 @@ install(TARGETS ${TARGET_LIBRARIES}
 ################################################################################
 ## Executables
 
-add_subdirectory("gui")
+if(BUILD_GUI_DEMO)
+  add_subdirectory("gui")
+endif()

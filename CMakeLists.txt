@@ -8,6 +8,8 @@ project(libBatteryInfo
   LANGUAGES CXX
 )
 
+option(BUILD_STATIC_LIB "Build static library" ON)
+
 ################################################################################
 ## Dependencies
 include(FetchContent)
@@ -23,28 +25,37 @@ file(
   "inc/*"
 )
 
-add_library(${CMAKE_PROJECT_NAME} "${CXX_SOURCES}")
-target_compile_features(${CMAKE_PROJECT_NAME} PRIVATE cxx_std_23)
-if(MSVC)
-  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /W4 /permissive) # /WX
-  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE /utf-8) # /WX
-else()
-  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic) # -Werror
+set(TARGET_LIBRARIES ${CMAKE_PROJECT_NAME})
+add_library(${CMAKE_PROJECT_NAME} SHARED)
+
+if(BUILD_STATIC_LIB)
+  add_library(${CMAKE_PROJECT_NAME}Static STATIC)
+  list(APPEND TARGET_LIBRARIES ${CMAKE_PROJECT_NAME}Static)
 endif()
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC "inc/")
-if(WIN32)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
-    setupapi
-  )
-endif()
+
+foreach(target ${TARGET_LIBRARIES})
+  target_sources(${target} PRIVATE "${CXX_SOURCES}")
+  target_compile_features(${target} PRIVATE cxx_std_23)
+  if(MSVC)
+    target_compile_options(${target} PRIVATE /W4 /permissive) # /WX
+    target_compile_options(${target} PRIVATE /utf-8) # /WX
+  else()
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic) # -Werror
+  endif()
+  target_include_directories(${target} PUBLIC "inc/")
+  if(WIN32)
+    target_link_libraries(${target} PRIVATE setupapi)
+  endif()
+endforeach()
 
 ################################################################################
 ## Export
 
 include(GNUInstallDirs)
-install(TARGETS ${CMAKE_PROJECT_NAME}
+install(TARGETS ${TARGET_LIBRARIES}
   BUNDLE DESTINATION .
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 

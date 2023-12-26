@@ -6,6 +6,7 @@
 #include <ranges>
 #include <vector>
 
+#include "dll_utils.h"
 #include "types.h"
 
 namespace orange::battery {
@@ -20,9 +21,9 @@ namespace orange::battery {
         };
 
     public:
-        static auto query_battery_count() noexcept -> std::optional<uint32_t>;
-        static auto query_battery_info(uint32_t idx) noexcept -> std::expected<BatteryInfo, ErrorType>;
-        static auto query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType>;
+        DLL_EXPORT static auto query_battery_count() noexcept -> std::optional<uint32_t>;
+        DLL_EXPORT static auto query_battery_info(uint32_t idx) noexcept -> std::expected<BatteryInfo, ErrorType>;
+        DLL_EXPORT static auto query_battery_info_all() noexcept -> std::expected<std::vector<BatteryInfo>, ErrorType>;
 
     private:
         inline static auto query_battery_info_all_seperate_impl() noexcept

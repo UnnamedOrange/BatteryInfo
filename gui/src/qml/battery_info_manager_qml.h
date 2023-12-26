@@ -7,7 +7,7 @@
 #include <QVariantMap>
 #include <QtQml/qqmlregistration.h>
 
-#include "../battery/battery_info_manager.h"
+#include <battery_info/battery_info_manager.h>
 
 namespace orange::battery {
     class BatteryInfoManagerQml : public QObject {

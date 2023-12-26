@@ -1,6 +1,6 @@
 #ifdef _WIN32
 
-#include "battery_info_manager.h"
+#include <battery_info/battery_info_manager.h>
 
 #include <Windows.h>
 #include <batclass.h>

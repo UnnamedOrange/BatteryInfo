@@ -1,6 +1,9 @@
 ## macOS
 .DS_Store
 
+## Windows
+desktop.ini
+
 ## Qt
 
 # C++ objects and libs
@@ -62,6 +65,27 @@ compile_commands.json
 # Qt Design Studio
 *.qmlproject.qtds
 
+## CMake
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
 ## Visual Studio Code
 .vscode/
 build/
+
+## Visual Studio
+.vs/
+out/
+
+## CLion
+.idea/
+cmake-build-*/

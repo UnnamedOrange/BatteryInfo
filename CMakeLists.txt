@@ -10,6 +10,7 @@ project(libBatteryInfo
 
 option(BUILD_STATIC_LIB "Build static library" ON)
 
+option(BUILD_CLI_DEMO "Build CLI demo" ON)
 option(BUILD_GUI_DEMO "Build GUI demo" OFF)
 
 ################################################################################
@@ -63,6 +64,10 @@ install(TARGETS ${TARGET_LIBRARIES}
 
 ################################################################################
 ## Executables
+
+if(BUILD_CLI_DEMO)
+  add_subdirectory("cli")
+endif()
 
 if(BUILD_GUI_DEMO)
   add_subdirectory("gui")

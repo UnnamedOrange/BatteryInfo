@@ -56,11 +56,6 @@ target_link_libraries(BatteryInfoApp PRIVATE
   Qt${QT_VERSION_MAJOR}::Qml
   Qt${QT_VERSION_MAJOR}::Quick
 )
-if(WIN32)
-  target_link_libraries(BatteryInfoApp PRIVATE
-    setupapi
-  )
-endif()
 
 if (BUILD_QDS_COMPONENTS)
   include(${CMAKE_CURRENT_SOURCE_DIR}/qmlcomponents)
@@ -77,5 +72,6 @@ include(GNUInstallDirs)
 install(TARGETS BatteryInfoApp
   BUNDLE DESTINATION .
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
